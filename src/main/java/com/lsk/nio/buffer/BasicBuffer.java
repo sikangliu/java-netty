@@ -1,4 +1,4 @@
-package com.lsk.nio;
+package com.lsk.nio.buffer;
 
 import java.nio.IntBuffer;
 
