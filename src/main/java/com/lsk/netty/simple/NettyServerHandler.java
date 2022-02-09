@@ -7,6 +7,7 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.ChannelPipeline;
 import io.netty.util.CharsetUtil;
+import java.util.concurrent.TimeUnit;
 
 /*
 说明
@@ -33,6 +34,45 @@ public class NettyServerHandler extends ChannelInboundHandlerAdapter {
         ByteBuf buf = (ByteBuf) msg;
         System.out.println("客户端发送消息是:" + buf.toString(CharsetUtil.UTF_8));
         System.out.println("客户端地址:" + channel.remoteAddress());
+
+        // 有一个耗时任务 -> 异步执行 -> 提交该channel 对应的NIOEventLoop 的taskQueue中
+        /*Thread.sleep(10 * 1000);
+        ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端2...", CharsetUtil.UTF_8));
+        System.out.println("go on...");*/
+
+        // 解决方案1：用户程序自定义的普通任务
+
+        //异步机制，阻塞的任务会放在taskQueue
+        /*ctx.channel().eventLoop().execute(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10 * 1000);
+                    //将数据写入到缓存，并刷新
+                    ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端2...", CharsetUtil.UTF_8));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        System.out.println("go on...");*/
+
+        // 解决方案2： 用户自定义定时任务 -> 该任务放到 scheduleTaskQueue中
+        /*ctx.channel().eventLoop().schedule(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    Thread.sleep(10 * 1000);
+                    //将数据写入到缓存，并刷新
+                    ctx.writeAndFlush(Unpooled.copiedBuffer("hello,客户端2...", CharsetUtil.UTF_8));
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 5, TimeUnit.SECONDS);
+
+        System.out.println("go on...");*/
     }
 
     //数据读取完毕
