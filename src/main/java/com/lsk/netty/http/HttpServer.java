@@ -20,7 +20,7 @@ public class HttpServer {
                     .channel(NioServerSocketChannel.class)
                     .childHandler(new HttpInitializer());// 添加自定义初始化
 
-            ChannelFuture channelFuture = serverBootstrap.bind(8081).sync();
+            ChannelFuture channelFuture = serverBootstrap.bind(6668).sync();
             channelFuture.channel().closeFuture().sync();
         } finally {
             bossgroup.shutdownGracefully();

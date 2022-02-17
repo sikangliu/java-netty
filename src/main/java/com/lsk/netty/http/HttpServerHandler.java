@@ -15,13 +15,14 @@ import io.netty.util.CharsetUtil;
 import java.net.URI;
 
 /**
- * 是 ChannelInboundHandlerAdapter 的子类（通道入栈处理器）
- * 客户端和服务端相互通讯的数据被封装成HttpObject
+ * SimpleChannelInboundHandler:是 ChannelInboundHandlerAdapter 的子类（通道入栈处理器）
+ * HttpObject:客户端和服务端相互通讯的数据被封装成HttpObject
  */
 public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
+
     //读取客户端事件
-    @Override
     //ctx的真实类型DefaultChannelHandlerContext
+    @Override
     protected void channelRead0(ChannelHandlerContext ctx, HttpObject msg) throws Exception {
 
         //判断msg是不是httprequest请求
@@ -42,7 +43,7 @@ public class HttpServerHandler extends SimpleChannelInboundHandler<HttpObject> {
             }
             //回复浏览器信息{http协议}
             ByteBuf content = Unpooled.copiedBuffer("你好，浏览器...", CharsetUtil.UTF_8);
-            //构造一个http相应，即response      版本和状态码
+            //构造一个http相应，即response 版本和状态码
             FullHttpResponse response =
                     new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.OK, content);
             response.headers().set(HttpHeaderNames.CONTENT_TYPE, "text/plain;charset=utf-8");
